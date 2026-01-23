@@ -80,7 +80,7 @@ EOF
 echo "<h1>Welcome to $DOMAIN</h1>" > /var/www/html/main-site/index.html
 
 # Install Certbot
-dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y
+dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm -y
 dnf install certbot python3-certbot-apache -y
 
 # reboot Apache
