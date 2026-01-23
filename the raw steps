@@ -1,16 +1,89 @@
-## Add new port rule at VM/Networking/Networking setting
+## add new port rule at **Azure_portal**/VM/Networking/Networking_setting
 Src * Dst * port 80/443 protocol TCP
 
-## install httpd
+## Install httpd
 dnf install httpd -y
 
-## setup httpd
+## Setup httpd
 systemctl start httpd
 systemctl enable httpd
-systemctl status httpd  -> if it shows all good here, you could have seen the testpage with your public IP address.
+systemctl status httpd  --> if it shows all good here, you could have seen the testpage with your public IP address.
 
-## add DNS record at /DNS zones/you domain/record sets/+Add
-## you can't buy a domain in Azure. Azure is the place to manage it!
+## To link your public IP address to your domain name, you need to add a DNS A record.
+## You need to add this record at your domain carrier fist, NOT Azure!!
+## (Optional) If you also want to manage your domain in Azure, you can configure it 
+    at **Azure_portal**/DNS zones/**you domain**/record sets/+Add
+## For more details, you can find it at **Namecheap setting**.
+
+## After A record is set, you need to configure the VirualHost.
+tee /etc/httpd/conf.d/cloud-test-jp-main.conf << 'EOF'
+<VirtualHost *:80>
+    ServerName **your_doamin.com**
+    ServerAlias www.**your_doamin.com**
+    DocumentRoot /var/www/html/main-site
+    
+    ErrorLog /var/log/httpd/**your_doamin**_error.log
+    CustomLog /var/log/httpd/**your_doamin**_access.log combined
+    
+    <Directory /var/www/html/main-site>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+EOF
+
+## Create a folder that you mentioned in the previous setting
+mkdir -p /var/www/html/main-site
+
+## Whatever page you want to show to the world, simply put it in this folder.
+## Here is a test page that you can see whether all things are good.
+tee /var/www/html/main-site/index.html << 'HTML'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>**YOUR WEB SERVER** - MainPage</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        .site { background: #e3f2fd; padding: 20px; margin: 20px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🎯 MainPage</h1>
+    <div class="site">
+        <h2>**YOUR DOMAIN**</h2>
+        <p>This is the Main Site!!! YEAH!!! YOU MADE IT!!!!</p>
+    </div>
+</body>
+</html>
+HTML
+
+## install CA 
+dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y       --> You need to install the repository first, Certbot is not available by default in RHEL 9.
+dnf install certbot python3-certbot-apache -y        -->Remeber to install python3-certbot-apache, or you can't use command "certbot --apache".
+
+## Before we go further, you need to reconfirm a few things.
+#1# Whether your VirtualHost is configured. Run command 'apachectl configtest', and if you see 'Syntax OK', that means you are perfect!
+#2# Whether your A record is added at the carrier side. You should have at least 2 A record. One for www.your_domain.com and One for your_domain.com
 
 ## setup CA
+certbot --apache -d **your_domain**.com -d **your_domain**.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
