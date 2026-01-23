@@ -1,6 +1,12 @@
 ## add new port rule at **Azure_portal**/VM/Networking/Networking_setting
 Src * Dst * port 80/443 protocol TCP
 
+## add firewall rules.
+firewall-cmd --list-all
+firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-service=https
+firewall-cmd --reload
+
 ## Install httpd
 dnf install httpd -y
 
