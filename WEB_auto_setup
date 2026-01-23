@@ -1,0 +1,91 @@
+#!/bin/bash
+# setup-simple.sh
+
+set -e  # quit on error
+
+echo "======================================="
+echo "    Apache web server auto setup"
+echo "======================================="
+echo ""
+
+# have to be root
+if [ "$EUID" -ne 0 ]; then
+    echo "error: must be run as root"
+    echo "usage: sudo $0"
+    exit 1
+fi
+
+# 获取域名
+echo "please input your domain name (e.g., example.com)"
+echo "if you want to quit, type 'quit', 'exit', or 'q'"
+echo ""
+
+while true; do
+    read -p "Domain_Name: " DOMAIN
+    
+    # check for quit commands
+    if [[ "$DOMAIN" == "quit" ]] || [[ "$DOMAIN" == "exit" ]] || [[ "$DOMAIN" == "q" ]]; then
+        echo "cancelled by user"
+        exit 0
+    fi
+    
+    # check for empty input
+    if [ -z "$DOMAIN" ]; then
+        echo "error: domain name cannot be empty"
+        echo "if you want to quit, type 'quit', 'exit', or 'q'"
+        echo ""
+        continue
+    fi
+    else
+        break
+    fi
+done
+
+echo "Setting $DOMAIN ... please wait ..."
+
+# Install Apache
+dnf install httpd -y
+systemctl start httpd
+systemctl enable httpd
+
+# Change Firewall to allow HTTP and HTTPS
+firewall-cmd --permanent --add-service=http
+firewall-cmd --permanent --add-service=https
+firewall-cmd --reload
+
+# Create document root
+mkdir -p /var/www/html/main-site
+
+# Create virtual host
+cat > /etc/httpd/conf.d/${DOMAIN}.conf << EOF
+<VirtualHost *:80>
+    ServerName $DOMAIN
+    ServerAlias www.$DOMAIN
+    DocumentRoot /var/www/html/main-site
+    
+    ErrorLog /var/log/httpd/$DOMAIN_error.log
+    CustomLog /var/log/httpd/$DOMAIN_access.log combined
+    
+    <Directory /var/www/html/main-site>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+EOF
+
+# Create test page
+echo "<h1>Welcome to $DOMAIN</h1>" > /var/www/html/main-site/index.html
+
+# Install Certbot
+dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y
+dnf install certbot python3-certbot-apache -y
+
+# reboot Apache
+systemctl restart httpd
+
+echo "Configuration completed."
+echo "web: http://$DOMAIN"
+echo "++++++++++++++++++++++++++++++++++++"
+echo "Next Step: sudo certbot --apache -d $DOMAIN" -d "www.$DOMAIN"
+echo "++++++++++++++++++++++++++++++++++++"
