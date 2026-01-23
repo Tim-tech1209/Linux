@@ -53,6 +53,7 @@ systemctl enable httpd
 # firewall-cmd --permanent --add-service=http
 # firewall-cmd --permanent --add-service=https
 # firewall-cmd --reload
+sudo nft add rule inet filter input tcp dport { http, https } accept
 
 # Create document root
 mkdir -p /var/www/html/main-site
