@@ -1,0 +1,1 @@
+# This file is to summarize all I have learnt for LPIC 305.
