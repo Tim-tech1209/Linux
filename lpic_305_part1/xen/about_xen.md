@@ -5,7 +5,46 @@
 
 ### ■ Xen Architecture
 #### Xen is a hypervisor-type (Type 1) virtualization software. It places a virtualization layer known as the "Xen Hypervisor" directly on the hardware to control multiple operating systems. Below are the structural diagrams for Xen’s paravirtualization and full virtualization:
-#### (Note: Diagrams referred to in the text are not included here)
+
+```mermaid
+The error occurs because Mermaid's subgraph titles cannot contain parentheses () directly without quoting them. When the parser sees (準仮想化), it thinks you are trying to define a node shape rather than a label.
+
+To fix this, wrap the title in double quotes. I have also refined the code to ensure the boxes stack correctly and use the specific colors from your image.
+
+Code snippet
+graph TD
+    subgraph PV ["Paravirtualization (準仮想化)"]
+        direction TB
+        PV_Dom0["管理OS <br/> Domain-0"]
+        PV_DomU1["ゲストOS <br/> Domain-U <br/> PV Domain"]
+        PV_DomU2["ゲストOS <br/> Domain-U <br/> PV Domain"]
+        
+        PV_Hypervisor["ハイパーバイザー"]
+        PV_Hardware["物理マシン"]
+
+        %% Structural Links
+        PV_Dom0 --- PV_Hypervisor
+        PV_DomU1 --- PV_Hypervisor
+        PV_DomU2 --- PV_Hypervisor
+        PV_Hypervisor --- PV_Hardware
+    end
+
+    subgraph HVM ["Full Virtualization (完全仮想化)"]
+        direction TB
+        HVM_Dom0["管理OS <br/> Domain-0"]
+        HVM_DomU1["ゲストOS <br/> Domain-U <br/> HVM Domain"]
+        HVM_DomU2["ゲストOS <br/> Domain-U <br/> HVM Domain"]
+        
+        HVM_Hypervisor["ハイパーバイザー"]
+        HVM_Hardware["物理マシン"]
+
+        %% Structural Links
+        HVM_Dom0 --- HVM_Hypervisor
+        HVM_DomU1 --- HVM_Hypervisor
+        HVM_DomU2 --- HVM_Hypervisor
+        HVM_Hypervisor --- HVM_Hardware
+    end
+```
 
 ### ■ Xen Virtual Machines (Domain-0, Domain-U)
 #### In Xen, virtual machines are referred to as "domains." There are two types of domains in Xen: "Domain-0" and "Domain-U."
