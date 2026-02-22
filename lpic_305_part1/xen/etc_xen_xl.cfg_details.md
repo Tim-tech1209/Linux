@@ -4,7 +4,7 @@
 | :--- | :--- |
 | bootloader="program" | Specify the program that finds the kernel and initrd. |
 | builder=generic | Specify VM type, eg. PV=generic(default), or hvm. |
-| disk=['disk def', 'disk def', ...] | Specify the disk devices that is allocated to the VM. |
+| disk=['disk def', 'disk def', ...] | Specify the disk devices that is allocated to the VM, like 'disk = [ 'format=raw, vdev=xvda, access=rw, target=/var/lib/xen/images/ubuntu.img' ]'|
 | kernel="kernel image file" | Specify the absolute path to kernel image file, like 'kernel = "/boot/vmlinuz-5.15.0-generic"'|
 | memory=memory size | Specify memory size(MB). |
 | name="VM name"| Specify the name of the VM |
