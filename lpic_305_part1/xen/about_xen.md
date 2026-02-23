@@ -6,45 +6,8 @@
 ### ■ Xen Architecture
 #### Xen is a hypervisor-type (Type 1) virtualization software. It places a virtualization layer known as the "Xen Hypervisor" directly on the hardware to control multiple operating systems. Below are the structural diagrams for Xen’s paravirtualization and full virtualization:
 
-```mermaid
-The error occurs because Mermaid's subgraph titles cannot contain parentheses () directly without quoting them. When the parser sees (準仮想化), it thinks you are trying to define a node shape rather than a label.
-
-To fix this, wrap the title in double quotes. I have also refined the code to ensure the boxes stack correctly and use the specific colors from your image.
-
-Code snippet
-graph TD
-    subgraph PV ["Paravirtualization (準仮想化)"]
-        direction TB
-        PV_Dom0["管理OS <br/> Domain-0"]
-        PV_DomU1["ゲストOS <br/> Domain-U <br/> PV Domain"]
-        PV_DomU2["ゲストOS <br/> Domain-U <br/> PV Domain"]
-        
-        PV_Hypervisor["ハイパーバイザー"]
-        PV_Hardware["物理マシン"]
-
-        %% Structural Links
-        PV_Dom0 --- PV_Hypervisor
-        PV_DomU1 --- PV_Hypervisor
-        PV_DomU2 --- PV_Hypervisor
-        PV_Hypervisor --- PV_Hardware
-    end
-
-    subgraph HVM ["Full Virtualization (完全仮想化)"]
-        direction TB
-        HVM_Dom0["管理OS <br/> Domain-0"]
-        HVM_DomU1["ゲストOS <br/> Domain-U <br/> HVM Domain"]
-        HVM_DomU2["ゲストOS <br/> Domain-U <br/> HVM Domain"]
-        
-        HVM_Hypervisor["ハイパーバイザー"]
-        HVM_Hardware["物理マシン"]
-
-        %% Structural Links
-        HVM_Dom0 --- HVM_Hypervisor
-        HVM_DomU1 --- HVM_Hypervisor
-        HVM_DomU2 --- HVM_Hypervisor
-        HVM_Hypervisor --- HVM_Hardware
-    end
-```
+![paravirtualization](./xen_images/full_virtualization.drawio.png)
+![full_virtualization](./xen_images/paravirtualization.drawio.png)
 
 ### ■ Xen Virtual Machines (Domain-0, Domain-U)
 #### In Xen, virtual machines are referred to as "domains." There are two types of domains in Xen: "Domain-0" and "Domain-U."
@@ -71,6 +34,8 @@ graph TD
 ### ■ Paravirtualization (PV)
 #### In the Xen paravirtualization mechanism, access to physical devices from a Domain-U uses special paravirtualization-aware device drivers (frontend drivers). Requests are transferred via the hypervisor to the backend drivers (virtual device drivers) within Domain-0. The backend drivers then pass these requests to the Linux device drivers, which access the physical hardware to execute the requested tasks.
 
+![parav_details](./xen_images/parav_details.drawio.png)
+
 #### Paravirtualization does not perform hardware emulation. To access hardware such as network or disk devices, guest OSs use frontend drivers to achieve high-speed I/O processing. Therefore, each guest OS must have an implementation of these frontend drivers. Additionally, because the guest OS requires modification during installation, it is generally limited to open-source operating systems like Linux.
 
 ### ■ Full Virtualization (HVM)
@@ -80,6 +45,8 @@ graph TD
 
 ## 【Xen Network Configuration】
 #### The network configuration for Xen 4.1 and later is as follows:
+
+![xen_networking](./xen_images/xen_networking_architecture.drawio.png)
 
 #### While a standard network interface (e.g., "eth0") is visible from the Domain-U side, Xen internally treats this as the frontend for the Domain-U. On the Domain-0 side, a corresponding backend interface called "vif" is created. These interfaces are assigned unique identifiers such as vifX.Y, where X is the Domain ID and Y is the interface index (starting from 0).
 
